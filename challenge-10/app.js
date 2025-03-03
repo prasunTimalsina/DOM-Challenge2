@@ -1,22 +1,82 @@
-/**
- * Write your challenge solution here
- */
-// Image data
-const images = [
-  {
-    url: 'https://plus.unsplash.com/premium_photo-1666863909125-3a01f038e71f?q=80&w=1986&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-    caption: 'Beautiful Mountain Landscape',
-  },
-  {
-    url: 'https://plus.unsplash.com/premium_photo-1690576837108-3c8343a1fc83?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-    caption: 'Ocean Sunset View',
-  },
-  {
-    url: 'https://images.unsplash.com/photo-1473448912268-2022ce9509d8?q=80&w=2041&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-    caption: 'Autumn Forest Path',
-  },
-  {
-    url: 'https://plus.unsplash.com/premium_photo-1680466057202-4aa3c6329758?q=80&w=2138&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-    caption: 'Urban City Skyline',
-  },
-];
+///elements
+const gameContainer = document.querySelector(".game-container");
+
+//variables
+const state = {
+  moves: 0,
+  emojies: ["🐶", "🐱", "🐭", "🐹", "🐰", "🦊", "🐻", "🐼"],
+  shuffledArray: [],
+  timer: null,
+};
+
+//shuffling algo
+
+// function
+const shuffleArray = () => {
+  state.shuffledArray.length = 0;
+  for (let i = 0; i < 8; i++) {
+    let emoji = state.emojies[i];
+    for (let i = 0; i < 2; i++) {
+      let emojiPlaced = false;
+      while (!emojiPlaced) {
+        const randomCell = Math.floor(Math.random() * 16);
+        if (!state.shuffledArray[randomCell]) {
+          state.shuffledArray[randomCell] = emoji;
+          emojiPlaced = true;
+        }
+      }
+    }
+  }
+};
+
+const shuffleGrid = () => {
+  state.shuffledArray.forEach((emoji, index) => {
+    const card = document.createElement("div");
+    card.classList.add("card");
+    const insideCard = document.createElement("div");
+    insideCard.classList.add("card-front");
+    insideCard.textContent = "?";
+    card.appendChild(insideCard);
+    gameContainer.appendChild(card);
+
+    card.addEventListener("click", () => {
+      card.classList.add("flipped");
+      insideCard.classList.remove("card-front");
+      insideCard.classList.add("card-back");
+      insideCard.textContent = state.shuffledArray[index];
+    });
+  });
+};
+
+//playMove
+const playMove = (index1, index2) => {
+  /* const index1 = prompt("Choose a index");
+  const index2 = prompt("Choose another index"); */
+  const emoji1 = state.shuffledArray[index1];
+  const emoji2 = state.shuffledArray[index2];
+  if (emoji1 === emoji2) {
+    console.log("matched");
+    const index = state.emojies.indexOf(emoji1);
+    state.emojies.splice(index, 1);
+    console.log(state);
+    state.moves++;
+    if (state.emojies.length <= 0) {
+      console.log("you won");
+    } else {
+      playMove();
+    }
+  } else {
+    console.log("didn't matched");
+    playMove();
+    state.moves++;
+  }
+};
+
+const init = () => {
+  shuffleArray();
+  console.log(state.shuffledArray);
+  shuffleGrid();
+  /* playMove(); */
+};
+
+init();
